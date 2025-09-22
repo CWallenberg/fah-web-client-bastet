@@ -186,6 +186,7 @@ export default {
     reset() {
       this.clear()
       for (let team of this.teams) this.add_team(team)
+      this.add_team(234980); // Include Banano team in graph
       this.chart.start()
       this.set_mode(this.mode)
     },
