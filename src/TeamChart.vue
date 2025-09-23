@@ -186,6 +186,8 @@ export default {
     reset() {
       this.clear()
       //for (let team of this.teams) this.add_team(team)
+      //this.add_team(32); // Include www.Overclockers.com team in graph
+      //this.add_team(51); // Include Alliance Francophone team in graph
       this.add_team(223518); // Include LinusTechTips team in graph
       this.add_team(234980); // Include Banano team in graph
       this.chart.start()
