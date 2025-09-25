@@ -84,8 +84,8 @@ export default {
 
 
     tpercent(user, team) {
-      if (!team) return '0.0%'
-      return (user / team * 100).toFixed(1) + '%'
+      if (!team) return '0.000%'
+      return (user / team * 100).toFixed(3) + '%'
     }
   }
 }
