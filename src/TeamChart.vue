@@ -186,10 +186,13 @@ export default {
     reset() {
       this.clear()
       //for (let team of this.teams) this.add_team(team)
+      //this.add_team(0); // Include Default team in graph
       //this.add_team(32); // Include www.Overclockers.com team in graph
       //this.add_team(51); // Include Alliance Francophone team in graph
+      //this.add_team(70335); // Include PC Games Hardware team in graph
       this.add_team(223518); // Include LinusTechTips team in graph
       this.add_team(234980); // Include Banano team in graph
+      //this.add_team(1066107); // Include Atto team in graph
       this.chart.start()
       this.set_mode(this.mode)
     },
