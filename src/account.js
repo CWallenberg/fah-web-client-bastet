@@ -56,6 +56,7 @@ class Account {
 
 
   get_columns() {
+    if (document.body.clientWidth <= 520) return Unit.minimal_columns
     if (document.body.clientWidth <= 800) return Unit.default_columns
     let columns = (this.data.config || {}).columns
     return (columns && columns.length) ? columns : Unit.default_columns
@@ -333,7 +334,7 @@ class Account {
   async save(data) {
     let restart = data.node != this.data.node
     await this.ctx.$api.put('/account', data, 'Saving account data')
-    await this.ctx.$node.broadcast('config', {data})
+    await this.ctx.$node.broadcast('config', {config: data})
     if (restart) await this.ctx.$node.broadcast('restart')
     this.set_data(data) // NOTE, this indirectly triggers a node reconnect
   }
