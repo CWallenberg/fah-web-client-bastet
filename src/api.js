@@ -139,9 +139,15 @@ class API {
       return this.error(r, path, method, data, action, error_cb)
     }
 
+    const apiKey = import.meta.env || '';
+
     try {
       let url    = new URL(this.url + path)
       let config = {method, headers: {}, credentials: 'include'}
+
+      if (apiKey) {
+        config.headers['x-authentication-psk'] = apiKey;
+      }
 
       if (this.sid) config.headers.Authorization = this.sid
 
