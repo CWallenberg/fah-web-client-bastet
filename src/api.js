@@ -139,7 +139,7 @@ class API {
       return this.error(r, path, method, data, action, error_cb)
     }
 
-    const apiKey = import.meta.env || '';
+    const apiKey = import.meta.env.VITE_API_KEY || '';
 
     try {
       let url    = new URL(this.url + path)
