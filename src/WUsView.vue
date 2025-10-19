@@ -127,7 +127,7 @@ export default {
 
     machines()  {return unique_values(this.all_wus, 'machine')},
     projects()  {return unique_values(this.all_wus, 'project')},
-    cores()     {return unique_values(this.all_wus, 'cores')},
+    cores()     {return unique_values(this.all_wus, 'core')},
     oses()      {return unique_values(this.all_wus, 'os_title')},
     states()    {return unique_values(this.all_wus, 'state')},
     resources() {return unique_values(this.all_wus, 'resources')},
