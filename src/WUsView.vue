@@ -187,7 +187,7 @@ export default {
           td
             select(v-model="filter.core")
               option(value="Any") Any
-              option(v-for="core in cores", :value="core")
+              option(v-for="core in cores", :value="core") {{core}}
 
           td
             select(v-model="filter.os")
