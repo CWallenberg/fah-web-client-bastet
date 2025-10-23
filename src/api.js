@@ -131,6 +131,17 @@ class API {
     if (ret !== false) throw {action, error}
   }
 
+  async sha256(message) {
+    const BASE = 16;
+    const MAX_LENGTH = 2;
+    const hashBuffer = await crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(message)
+    );
+    return [...new Uint8Array(hashBuffer)]
+      .map((b) => b.toString(BASE).padStart(MAX_LENGTH, '0'))
+      .join('');
+  }
 
   async fetch(args) {
     const {path, method = 'GET', data, action, expire, error_cb} = args
@@ -146,7 +157,9 @@ class API {
       let config = {method, headers: {}, credentials: 'include'}
 
       if (apiKey) {
-        config.headers['x-authentication-psk'] = apiKey;
+        const timestamp = Date.now().toString();
+        config.headers['x-request-timestamp'] = timestamp;
+        config.headers['x-signature'] = await this.sha256(`${apiKey}${url.pathname}${timestamp}`);
       }
 
       if (this.sid) config.headers.Authorization = this.sid
