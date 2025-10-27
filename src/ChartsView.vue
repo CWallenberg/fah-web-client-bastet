@@ -115,12 +115,13 @@ export default {
       title:  '',
       coords: '',
       color:  '',
+      chartsD: {default: []},
     }
   },
 
 
   watch: {
-    charts() {this.reset()},
+    chartsD() {this.reset()},
     mode()   {this.reset()},
     source() {this.reset()},
   },
@@ -128,6 +129,8 @@ export default {
 
   mounted() {
     this.$util.merge_objs(this._config, this.config || {})
+    this.chartsD = this.charts
+    this.team(234980)
     this.chart = new Chart(this.$refs.chart, this._config, this.series)
     this.reset()
   },
@@ -157,7 +160,7 @@ export default {
 
     reset() {
       this.clear()
-      this.charts.map(this.add_chart)
+      this.chartsD.map(this.add_chart)
       this.chart.start()
       this.title = `${this.source} ${this.mode}`
     },
@@ -198,6 +201,25 @@ export default {
         series.add({x: time, y: value})
         this.chart.redraw()
       }
+    },
+
+
+    /*add_team(team) {
+      let chart = {team: team, type: "team"};
+
+      let color = colors[this.series.length]
+      let series  = new DataSeries(color, this.source_enabled(i.type))
+      series.chart = chart
+      this.series.push(series)
+
+      let cb = data => this.filter_data(series, data)
+      this.subs.push(this.$apiSock.subscribe(chart, cb))
+    },*/
+
+
+    team(team) {
+      let obj = { team: team, type: "team" };
+      this.chartsD.push(obj);
     },
 
 
