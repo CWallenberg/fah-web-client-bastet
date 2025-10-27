@@ -1,6 +1,13 @@
 Folding@home Web Control Changelog
 =================================
 
+## v8.5.3
+ - Added user timeseries charts
+ - Improved PPD chart
+ - Timeseries data caching
+ - Fix team settings view for small screens
+ - Filter Work Units by core. re:#255 @CWallenberg
+
 ## v8.5.2
  - Fix bug in account info (team, user, etc.) update. re:fah-client-bastet#369
  - Show undetected GPUs in settings.
