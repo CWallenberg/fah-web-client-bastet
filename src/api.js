@@ -131,14 +131,25 @@ class API {
     if (ret !== false) throw {action, error}
   }
 
-  async sha512(message) {
+  async hmac512(secret, message) {
     const BASE = 16;
     const MAX_LENGTH = 2;
-    const hashBuffer = await crypto.subtle.digest(
-      'SHA-512',
-      new TextEncoder().encode(message)
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw',
+      enc.encode(secret),
+      { name: 'HMAC', hash: 'SHA-512' },
+      false,
+      ['sign']
     );
-    return [...new Uint8Array(hashBuffer)]
+
+    const signature = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      enc.encode(message)
+    );
+
+    return [...new Uint8Array(signature)]
       .map((b) => b.toString(BASE).padStart(MAX_LENGTH, '0'))
       .join('');
   }
@@ -159,7 +170,7 @@ class API {
       if (apiKey) {
         const timestamp = Date.now().toString();
         config.headers['x-request-timestamp'] = timestamp;
-        config.headers['x-signature'] = await this.sha512(`${apiKey}${url.pathname}${timestamp}`);
+        config.headers['x-signature'] = await this.hmac512(`${url.pathname}${timestamp}`);
       }
 
       if (this.sid) config.headers.Authorization = this.sid
