@@ -131,11 +131,11 @@ class API {
     if (ret !== false) throw {action, error}
   }
 
-  async sha256(message) {
+  async sha512(message) {
     const BASE = 16;
     const MAX_LENGTH = 2;
     const hashBuffer = await crypto.subtle.digest(
-      'SHA-256',
+      'SHA-512',
       new TextEncoder().encode(message)
     );
     return [...new Uint8Array(hashBuffer)]
@@ -159,7 +159,7 @@ class API {
       if (apiKey) {
         const timestamp = Date.now().toString();
         config.headers['x-request-timestamp'] = timestamp;
-        config.headers['x-signature'] = await this.sha256(`${apiKey}${url.pathname}${timestamp}`);
+        config.headers['x-signature'] = await this.sha512(`${apiKey}${url.pathname}${timestamp}`);
       }
 
       if (this.sid) config.headers.Authorization = this.sid
