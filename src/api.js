@@ -170,7 +170,7 @@ class API {
       if (apiKey) {
         const timestamp = Date.now().toString();
         config.headers['x-request-timestamp'] = timestamp;
-        config.headers['x-signature'] = await this.hmac512(`${url.pathname}${timestamp}`);
+        config.headers['x-signature'] = await this.hmac512(apiKey, `${url.pathname}${timestamp}`);
       }
 
       if (this.sid) config.headers.Authorization = this.sid
