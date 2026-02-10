@@ -3,7 +3,7 @@
                   This file is part of the Folding@home Client.
 
           The fah-client runs Folding@home protein folding simulations.
-                    Copyright (c) 2001-2024, foldingathome.org
+                    Copyright (c) 2001-2026, foldingathome.org
                                All rights reserved.
 
        This program is free software; you can redistribute it and/or modify
@@ -92,9 +92,10 @@ function get_os_icon(os) {
 
 class Unit {
   constructor(ctx, unit, mach) {
-    this.util = ctx.$util
-    this.unit = unit
-    this.mach = mach
+    this.$refresh = ctx.$refresh
+    this.util     = ctx.$util
+    this.unit     = unit
+    this.mach     = mach
   }
 
   get id()          {return this.unit.id}
@@ -155,10 +156,10 @@ class Unit {
 
 
   get state() {
+    if (this.unit.result) return this.unit.result.toUpperCase()
     if (this.waiting)     return 'WAIT'
     if (this.finish)      return 'FINISH'
     if (this.paused)      return 'PAUSE'
-    if (this.unit.result) return this.unit.result.toUpperCase()
     return this.unit.state
   }
 
@@ -167,8 +168,9 @@ class Unit {
 
 
   get _status_text() {
+    if (this.unit.result) return status[this.state]
     if (this.waiting) return wait_status[this.unit.state] || status[this.state]
-    return this.unit.pause_reason || status[this.state]
+    return (this.paused && this.unit.pause_reason) || status[this.state]
   }
 
 
@@ -202,7 +204,11 @@ class Unit {
   }
 
 
-  get assign_time() {return this.util.since(this.assign.time) + ' ago'}
+  get assign_time() {
+    // Use $refresh to force updates
+    return this.util.since(this.assign.time, new Date, this.$refresh) + ' ago'
+  }
+
   get assign_time_title() {return this.util.format_time(this.assign.time)}
 
 
@@ -225,8 +231,8 @@ class Unit {
   get eta() {
     if (this.waiting) {
       let eta = new Date(this.unit.wait).getTime() - (new Date).getTime()
-      // Use "progress" to force updates
-      return this.util.time_interval(0 < eta ? eta / 1000 : 0, this.progress)
+      // Use $refresh to force updates
+      return this.util.time_interval(0 < eta ? eta / 1000 : 0, this.$refresh)
     }
 
     let eta = this.wu_progress < 1 ? this.unit.eta : 0
@@ -257,8 +263,8 @@ class Unit {
 
 
   get run_time() {
-    // Use "progress" to force updates
-    return this.util.time_interval(this.run_time_secs, this.progress)
+    // Use $refresh to force updates
+    return this.util.time_interval(this.run_time_secs, this.$refresh)
   }
 
 

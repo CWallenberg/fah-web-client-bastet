@@ -3,7 +3,7 @@
                   This file is part of the Folding@home Client.
 
           The fah-client runs Folding@home protein folding simulations.
-                    Copyright (c) 2001-2024, foldingathome.org
+                    Copyright (c) 2001-2026, foldingathome.org
                                All rights reserved.
 
        This program is free software; you can redistribute it and/or modify
@@ -324,7 +324,7 @@ Dialog.new-group-dialog(ref="new_group_dialog", buttons="Create")
             include a-z, 0-9, dashes (-) and dots (.).
           p.
             If the local machine is linked to another account you can link it to
-            this account by clicking on the #[.fa.fa-link] icon.
+            this account by clicking on the #[span.fa.fa-link] icon.
 
       .setting
         label Name

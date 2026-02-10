@@ -3,7 +3,7 @@
                   This file is part of the Folding@home Client.
 
           The fah-client runs Folding@home protein folding simulations.
-                    Copyright (c) 2001-2024, foldingathome.org
+                    Copyright (c) 2001-2026, foldingathome.org
                                All rights reserved.
 
        This program is free software; you can redistribute it and/or modify
@@ -76,9 +76,8 @@ export default {
         if (this.user && (this.user.length < 2 || 100 < this.user.length))
           errors.push('User name must be empty or between 2 and 100 characters')
 
-        if (this.user && !/^[^<>;&:\t]*$/.test(this.user))
-          errors.push('User name cannot contain any of the following: ' +
-            '<>;&: or tab')
+        if (this.user && !/^[^\t]*$/.test(this.user))
+          errors.push('User name cannot contain a tab')
 
         if (this.passkey && !/[a-fA-F\d]{30,32}/.test(this.passkey))
           errors.push('Invalid passkey')
@@ -198,7 +197,7 @@ Dialog(:buttons="buttons", ref="dialog", width="40em")
 
             p.
               When registering your Folding@home account you can generate
-              a secure passphrase by clicking the #[.fa.fa-refresh] icon.
+              a secure passphrase by clicking the #[span.fa.fa-refresh] icon.
               Make sure you save this passphrase somewhere safe, preferably in
               a password manager.
 
@@ -230,8 +229,7 @@ Dialog(:buttons="buttons", ref="dialog", width="40em")
               p.
                 You may optionally choose a user name to identify yourself on
                 Folding@home.  User names may contain any characters other than
-                #[tt &lt;&gt;&semi;&amp;:] or tab and can be anywhere from
-                2 to 100 characters long.
+                tab and can be anywhere from 2 to 100 characters long.
 
               p Leave this field blank to fold anonymously.
 

@@ -28,44 +28,82 @@
 
 <script>
 export default {
-  name: 'MainMenu',
+  name: 'TickerView',
+
+
+  data() {
+    return {
+      count: 0,
+      index: 0,
+      slots: [{offset: 20}, {offset: 40}]
+    }
+  },
+
+
+  computed: {
+    feed() {return this.$news.get_feed()}
+  },
+
+
+  mounted() {
+    this.slots[0].el = this.$refs.slot0
+    this.slots[1].el = this.$refs.slot1
+    this.update()
+  },
+
+
+  methods: {
+    update() {
+      if (this.feed.length < 2) return setTimeout(() => this.update(), 1000)
+
+      let delay = 100
+
+      for (let slot of this.slots) {
+        if (slot.offset == 20) {
+          if (this.feed.length <= this.index) this.index = 0
+          let item = this.feed[this.index++]
+          slot.el.textContent = item.title
+          slot.el.href        = item.url
+        }
+
+        if (!slot.offset) delay = 5000
+
+        slot.el.style.top = `${slot.offset / 10 + 0.4}em`
+        slot.offset--
+        if (slot.offset <= -20) slot.offset = 20
+      }
+
+      return setTimeout(() => this.update(), delay)
+    }
+  }
 }
 </script>
 
 <template lang="pug">
-.view-menu
-  router-link(to="/machines") Machines
-  router-link(to="/wus") Work Units
-  router-link(to="/stats") Stats
-  router-link(to="/projects") Projects
-  router-link(to="/news") News
+.ticker-view.view-panel
+  a.ticker-slot(ref="slot0", target="_blank")
+  a.ticker-slot(ref="slot1", target="_blank")
 </template>
 
 <style lang="stylus">
-.view-menu
-  display flex
-  justify-content space-between
-  background var(--header-bg)
-  font-size 12pt
-  padding 0 var(--gap)
+.ticker-view
+  padding 0.25em
+  height 2em
+  overflow hidden
+  text-align center
+  position relative
+  max-width 100vw
 
-  > a
+  .ticker-slot
+    position absolute
     display block
-    padding 0 var(--gap) calc(var(--gap) / 4) var(--gap)
-    border-bottom 3px solid var(--header-bg)
+    height 1.5em
+    text-decoration none
+    color var(--title-color)
     white-space nowrap
-    color var(--header-fg)
-
-    &:hover, &.router-link-active
-      text-decoration none
+    text-overflow ellipsis
+    width 95%
 
     &:hover
-      border-color var(--link-alt)
-
-    &.router-link-active
-      border-color var(--link-color)
-
-@media (max-width 800px)
-  .view-menu
-    font-size 10pt
+      color var(--link-color)
 </style>

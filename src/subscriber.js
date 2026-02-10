@@ -3,7 +3,7 @@
                   This file is part of the Folding@home Client.
 
           The fah-client runs Folding@home protein folding simulations.
-                    Copyright (c) 2001-2025, foldingathome.org
+                    Copyright (c) 2001-2026, foldingathome.org
                                All rights reserved.
 
        This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
            51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-                  For information regarding this software 358,797,681email:
+                  For information regarding this software email:
                                  Joseph Coffland
                           joseph@cauldrondevelopment.com
 
@@ -72,8 +72,7 @@ class Subscriber {
   }
 
 
-  async _cache_load() {
-    if (this.cache) return
+  async __cache_load() {
     this.cache = await caches.open('fah-' + this.ref)
 
     let data = []
@@ -92,9 +91,16 @@ class Subscriber {
   }
 
 
+  async _cache_load() {
+    if (!this.cachePromise) this.cachePromise = this.__cache_load()
+    return await this.cachePromise
+  }
+
+
   async _subscribe() {
     await this._cache_load()
     if (!this.sock.connected) return this.sock.connect()
+    if (this.subscribed) return
 
     let msg = this._get_message('subscribe')
     msg.max_count = this.max_count

@@ -1,8 +1,9 @@
-/*******************************************************************************
+/******************************************************************************\
+
                   This file is part of the Folding@home Client.
 
           The fah-client runs Folding@home protein folding simulations.
-                    Copyright (c) 2001-2024, foldingathome.org
+                    Copyright (c) 2001-2026, foldingathome.org
                                All rights reserved.
 
        This program is free software; you can redistribute it and/or modify
@@ -22,7 +23,8 @@
                   For information regarding this software email:
                                  Joseph Coffland
                           joseph@cauldrondevelopment.com
-*******************************************************************************/
+
+\******************************************************************************/
 
 import Util   from './util.js'
 import Matrix from './matrix.js'
@@ -131,6 +133,7 @@ class Chart {
       'redraw', 'restart', 'on_resize', 'on_mousemove', 'on_mouseleave'])
       this.bind(method)
 
+    this.redraw       = util.debounce(this.redraw,       250)
     this.restart      = util.debounce(this.restart,      100)
     this.on_resize    = util.debounce(this.on_resize,    100)
     this.on_mousemove = util.debounce(this.on_mousemove,  50)

@@ -3,7 +3,7 @@
                   This file is part of the Folding@home Client.
 
           The fah-client runs Folding@home protein folding simulations.
-                    Copyright (c) 2001-2024, foldingathome.org
+                    Copyright (c) 2001-2026, foldingathome.org
                                All rights reserved.
 
        This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,12 @@ export default {
     warn()      {return 1 < this.mach.get_group(this.group).failed_wus},
 
 
+    hide() {
+      return (this.$adata.config || {}).hide_empty_groups &&
+        !this.mach.has_resources(this.group)
+    },
+
+
     status() {
       let l = []
       if (this.failed) l.push(['Failed', this.failed])
@@ -71,7 +77,7 @@ export default {
 </script>
 
 <template lang="pug">
-.machine-group-header(v-if="header",
+.machine-group-header(v-if="header && !hide",
   :style="{'grid-column': `span ${columns.length + 1}`}",
   :class="{error: !!failed, warn: warn}")
   .group-name.header-subtitle

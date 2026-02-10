@@ -3,7 +3,7 @@
                   This file is part of the Folding@home Client.
 
           The fah-client runs Folding@home protein folding simulations.
-                    Copyright (c) 2001-2024, foldingathome.org
+                    Copyright (c) 2001-2026, foldingathome.org
                                All rights reserved.
 
        This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 
 \******************************************************************************/
 
-import {createApp}    from 'vue'
+import {createApp, ref} from 'vue'
 import App            from './App.vue'
 import router         from './router'
 import Button         from './Button.vue'
@@ -84,6 +84,10 @@ async function main(url) {
   ctx.$projects = new Projects(ctx)
   ctx.$stats    = new Stats(ctx)
   ctx.$news     = new News(ctx)
+
+  // Used to force computed values to refresh
+  ctx.$refresh = ref(0)
+  setInterval(() => ctx.$refresh.value++, 1000)
 
   let addr = ctx.$util.get_direct_address()
   ctx.$direct   = new DirectMachConn(ctx, 'local', addr)

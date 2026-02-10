@@ -3,7 +3,7 @@
                   This file is part of the Folding@home Client.
 
           The fah-client runs Folding@home protein folding simulations.
-                    Copyright (c) 2001-2024, foldingathome.org
+                    Copyright (c) 2001-2026, foldingathome.org
                                All rights reserved.
 
        This program is free software; you can redistribute it and/or modify
@@ -85,6 +85,11 @@ class Machine {
       return s.substring(0, max_length - 3) + '...'
 
     return s
+  }
+
+
+  has_resources(group = '') {
+    return this.get_config(group).cpus || this.get_gpus(group).length
   }
 
 

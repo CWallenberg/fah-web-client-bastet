@@ -3,7 +3,7 @@
                   This file is part of the Folding@home Client.
 
           The fah-client runs Folding@home protein folding simulations.
-                    Copyright (c) 2001-2024, foldingathome.org
+                    Copyright (c) 2001-2026, foldingathome.org
                                All rights reserved.
 
        This program is free software; you can redistribute it and/or modify
@@ -27,12 +27,13 @@
 -->
 
 <script>
-import MainMenu  from './MainMenu.vue'
+import MainMenu   from './MainMenu.vue'
+import TickerView from './TickerView.vue'
 
 
 export default {
   name: 'MainHeader',
-  components: {MainMenu},
+  components: {MainMenu, TickerView},
 }
 </script>
 
@@ -53,6 +54,8 @@ ViewHeader.main-header
 
   template(v-slot:menu)
     MainMenu
+
+TickerView(v-if="false")
 </template>
 
 <style lang="stylus">

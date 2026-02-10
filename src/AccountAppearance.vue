@@ -3,7 +3,7 @@
                   This file is part of the Folding@home Client.
 
           The fah-client runs Folding@home protein folding simulations.
-                    Copyright (c) 2001-2024, foldingathome.org
+                    Copyright (c) 2001-2026, foldingathome.org
                                All rights reserved.
 
        This program is free software; you can redistribute it and/or modify
@@ -80,6 +80,12 @@ fieldset.settings.view-panel
   .setting.wide-setting
     HelpBalloon(name="Wide Display"): p Use full screen width.
     input(v-model="config.wide", type="checkbox")
+
+  .setting.hide-empty-groups-setting
+    HelpBalloon(name="Hide Empty Groups"): p.
+      Hides empty resource groups on the Machines view.
+      Empty resource groups will still display under machine settings.
+    input(v-model="config.hide_empty_groups", type="checkbox")
 
   .columns-setting
     HelpBalloon(name="Work Unit Columns"): p.
