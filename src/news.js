@@ -59,7 +59,12 @@ class News {
     if (data) return this.set_feed(data)
 
     // Download feed
-    let r        = await fetch(`${this.url}/article`)
+    let r        = await this.ctx.$api.fetch({
+      path: `/article`,
+      action: 'Downloading latest news',
+      error_cb: () => false // Don't show error message
+    })
+
     let articles = await r.json()
 
     let feed = []
