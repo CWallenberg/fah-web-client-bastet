@@ -62,7 +62,6 @@ class News {
     let r        = await this.ctx.$api.fetch({
       path: `/article`,
       action: 'Downloading latest news',
-      error_cb: () => false // Don't show error message
     })
 
     let articles = await r.json()
