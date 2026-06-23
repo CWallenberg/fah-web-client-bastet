@@ -75,7 +75,7 @@ class News {
         author:      a.author,
         date:        new Date(a.published).toDateString(),
         description: a.excerpt,
-        image:       a.hero ? `${this.url}/asset/${a.hero}/web` : undefined,
+        image:       a.hero ? `https://api.foldingathome.org/asset/${a.hero}/web` : undefined,
       })
 
     if (!feed.length) return
