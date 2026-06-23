@@ -64,7 +64,7 @@ class News {
       action: 'Downloading latest news',
     })
 
-    let articles = await r.json()
+    let articles = r;
 
     let feed = []
     for (const a of articles)
