@@ -31,6 +31,7 @@ import {reactive} from 'vue'
 
 class News {
   constructor(ctx, timeout = 24 * 60 * 60 * 1000) {
+    this.ctx     = ctx
     this.cache   = ctx.$cache
     this.url     = ctx.$api.url
     this.timeout = timeout
