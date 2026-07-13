@@ -150,6 +150,20 @@ export default {
     },
 
 
+    download() {
+      const text = this.lines.map(line => line[1]).join('\n')
+      const name = this.mach.get_name().replace(/[^\w/.-]+/g, '_')
+      const ts   = this.$util.timestamp()
+      const blob = new Blob([text], {type: 'text/plain'})
+      const url  = URL.createObjectURL(blob)
+      const a    = document.createElement('a')
+      a.href     = url
+      a.download = `fah-client-${name}-${ts}.log`
+      a.click()
+      URL.revokeObjectURL(url)
+    },
+
+
     update() {
       this.$nextTick(() => {
         this.scroll_to_end()
@@ -222,6 +236,8 @@ export default {
       label(title="Filter log for warning messages").
         #[input(v-model="warnings", type="checkbox")] Warnings
       Button.button-icon(title="Reset search", icon="repeat", @click="reset")
+      Button.button-icon(title="Download log", icon="download",
+        @click="download", :disabled="!lines.length")
 
     .log-percent.fade-out(ref="percent")
       div {{scroll_percent}}%
