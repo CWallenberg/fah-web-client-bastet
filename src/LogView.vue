@@ -60,7 +60,8 @@ export default {
 
     visible_lines() {
       let lines = this.lines.slice(this.start, this.end)
-      return lines.map(line => [line[0], this.$util.ansi2html(line[1])])
+      return lines.map(line =>
+        [line[0], this.$util.ansi2html(line[1]), this.$util.ansi_class(line[1])])
     },
 
 
@@ -249,7 +250,8 @@ export default {
       .log-wrapper(v-else, ref="wrap",
         :style="{height: wrapper_height + 'px'}")
         .log-content(:style="{'padding-top': content_offset + 'px'}")
-          .log-line(v-for="line in visible_lines", v-html="line[1]")
+          .log-line(v-for="line in visible_lines", :class="line[2]",
+            v-html="line[1]")
 </template>
 
 <style lang="stylus">
@@ -294,4 +296,18 @@ export default {
 
       .log-line
         white-space nowrap
+        width max-content
+        min-width 100%
+
+        &.log-error
+          color var(--log-error-fg)
+          background var(--log-error-bg)
+
+        &.log-warn
+          color var(--log-warn-fg)
+          background var(--log-warn-bg)
+
+        &.log-debug
+          color var(--log-debug-fg)
+          background var(--log-debug-bg)
 </style>
