@@ -67,7 +67,7 @@ class API {
     const release = this.get_release()
     const base    = 'https://foldingathome.org/'
 
-    if (release == 'public') return base + 'start-folding/'
+    if (release == 'public') return base + 'download'
     return base + release + '/'
   }
 
