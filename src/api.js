@@ -76,7 +76,7 @@ class API {
 
 
   async _check_version() {
-    this.data.latest_version = await this.cache.get('latest-version')
+    this.data.latest_version = await this.cache.get('latest-version', this.timeout)
     if (this.data.latest_version != undefined) return
 
     const release = this.get_release()
