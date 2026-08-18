@@ -60,7 +60,8 @@ export default {
 
     visible_lines() {
       let lines = this.lines.slice(this.start, this.end)
-      return lines.map(line => [line[0], this.$util.ansi2html(line[1])])
+      return lines.map(line =>
+        [line[0], this.$util.ansi2html(line[1]), this.$util.ansi_class(line[1])])
     },
 
 
@@ -150,6 +151,20 @@ export default {
     },
 
 
+    download() {
+      const text = this.lines.map(line => line[1]).join('\n')
+      const name = this.mach.get_name().replace(/[^\w/.-]+/g, '_')
+      const ts   = this.$util.timestamp()
+      const blob = new Blob([text], {type: 'text/plain'})
+      const url  = URL.createObjectURL(blob)
+      const a    = document.createElement('a')
+      a.href     = url
+      a.download = `fah-client-${name}-${ts}.log`
+      a.click()
+      URL.revokeObjectURL(url)
+    },
+
+
     update() {
       this.$nextTick(() => {
         this.scroll_to_end()
@@ -222,6 +237,8 @@ export default {
       label(title="Filter log for warning messages").
         #[input(v-model="warnings", type="checkbox")] Warnings
       Button.button-icon(title="Reset search", icon="repeat", @click="reset")
+      Button.button-icon(title="Download log", icon="download",
+        @click="download", :disabled="!lines.length")
 
     .log-percent.fade-out(ref="percent")
       div {{scroll_percent}}%
@@ -233,7 +250,8 @@ export default {
       .log-wrapper(v-else, ref="wrap",
         :style="{height: wrapper_height + 'px'}")
         .log-content(:style="{'padding-top': content_offset + 'px'}")
-          .log-line(v-for="line in visible_lines", v-html="line[1]")
+          .log-line(v-for="line in visible_lines", :class="line[2]",
+            v-html="line[1]")
 </template>
 
 <style lang="stylus">
@@ -278,4 +296,18 @@ export default {
 
       .log-line
         white-space nowrap
+        width max-content
+        min-width 100%
+
+        &.log-error
+          color var(--log-error-fg)
+          background var(--log-error-bg)
+
+        &.log-warn
+          color var(--log-warn-fg)
+          background var(--log-warn-bg)
+
+        &.log-debug
+          color var(--log-debug-fg)
+          background var(--log-debug-bg)
 </style>

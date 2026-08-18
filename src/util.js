@@ -30,27 +30,7 @@ import {ungzip} from 'pako'
 import {reactive} from 'vue'
 
 
-const colors = [
-  '#000000',
-  '#cd0000',
-  '#00cd00',
-  '#cdcd00',
-  '#0000ee',
-  '#cd00cd',
-  '#00cdcd',
-  '#e5e5e5'
-]
-
-const bright = [
-  '#7f7f7f',
-  '#ff0000',
-  '#00ff00',
-  '#ffff00',
-  '#5c5cff',
-  '#ff00ff',
-  '#00ffff',
-  '#ffffff'
-]
+const ansiClass = {91: 'log-error', 92: 'log-debug', 93: 'log-warn'}
 
 
 const store_timeout = 24 * 60 * 60 * 1000
@@ -240,23 +220,13 @@ class Util {
   }
 
 
-  ansi2html(s) {
-    return this.escape_html(s).replace(
-      /\u001b\[(\d+)m(.*?)((\u001b\[0m)|$)/g, (s, m1, m2) => {
-
-        let c = parseInt(m1)
-        let fg
-
-        if      ( 30 <= c && c <=  37) {c = colors[c -  30]; fg = true }
-        else if ( 40 <= c && c <=  47) {c = colors[c -  40]; fg = false}
-        else if ( 90 <= c && c <=  97) {c = bright[c -  90]; fg = true }
-        else if (100 <= c && c <= 107) {c = colors[c - 100]; fg = false}
-        else return m2
-
-        let style = (fg ? 'color' : 'background') + ':' + c
-        return '<font style="' + style + '">' + m2 + '</font>'
-      })
+  ansi_class(s) {
+    let m = s.match(/\u001b\[(\d+)m/)
+    return m ? (ansiClass[parseInt(m[1])] || '') : ''
   }
+
+
+  ansi2html(s) {return this.escape_html(s).replace(/\u001b\[\d+m/g, '')}
 
 
   version_parse(v) {
@@ -388,9 +358,17 @@ class Util {
 
   format_time(t) {
     t = new Date(t)
-    return t.getUTCFullYear() + '/' + zpad(t.getUTCMonth() + 1) + '/' +
-      zpad(t.getUTCDate())    + ' ' + zpad(t.getUTCHours()) + ':' +
-      zpad(t.getUTCMinutes()) + ':' + zpad(t.getUTCSeconds())
+    return `${t.getUTCFullYear()}/${zpad(t.getUTCMonth() + 1)}/` +
+      `${zpad(t.getUTCDate())} ${zpad(t.getUTCHours())}:` +
+      `${zpad(t.getUTCMinutes())}:${zpad(t.getUTCSeconds())}`
+  }
+
+
+  timestamp(t = new Date) {
+    t = new Date(t)
+    return `${t.getUTCFullYear()}${zpad(t.getUTCMonth() + 1)}` +
+      `${zpad(t.getUTCDate())}-${zpad(t.getUTCHours())}` +
+      `${zpad(t.getUTCMinutes())}${zpad(t.getUTCSeconds())}`
   }
 
 

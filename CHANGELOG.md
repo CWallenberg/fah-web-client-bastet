@@ -10,6 +10,8 @@ Folding@home Web Control Changelog
  - Fast chart data load/store.
  - Removed random sort of news articles.
  - Get news articles from new API endpoint.
+ - Added log download log feature.
+ - Color background of log lines in light mode, re:#291
 
 ## v8.5.3
  - Added user timeseries charts
