@@ -1,6 +1,6 @@
 {
-  "name": "fah-web-v8-5",
-  "compatibility_date": "2026-05-07",
+  "name": "fah-web-client-bastet",
+  "compatibility_date": "2026-10-16",
   "compatibility_flags": [
     "brotli_content_encoding"
   ],
