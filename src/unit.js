@@ -26,7 +26,8 @@
 
 \******************************************************************************/
 
-import fields from './unit_fields.json'
+import {toRaw} from 'vue'
+import fields  from './unit_fields.json'
 
 
 const status = {
@@ -66,7 +67,7 @@ const icons = {
   'DOWNLOAD': 'download',
   'CORE':     'download',
   'RUN':      'refresh',
-  'FINISH':   'refresh',
+  'FINISH':   'flag-checkered',
   'UPLOAD':   'upload',
   'CLEAN':    'check', // Deprecated
   'WAIT':     'clock-o',
@@ -75,6 +76,16 @@ const icons = {
   'DUMPED':   'trash',
   'EXPIRED':  'calendar-times-o',
   'CREDITED': 'star',
+}
+
+
+const wait_icons = {
+  'ASSIGN':   'clock-o',
+  'DOWNLOAD': 'cloud-download',
+  'CORE':     'cogs',
+  'RUN':      'refresh',
+  'UPLOAD':   'cloud-upload',
+  'DUMP':     'trash-o',
 }
 
 
@@ -119,6 +130,10 @@ function get_os_icon(os) {
 
 class Unit {
   constructor(ctx, unit, mach) {
+    // ctx may be a reactive proxy, which would unwrap $refresh here and make
+    // whatever creates this Unit, eg a whole unit list, recalculate every second
+    ctx = toRaw(ctx)
+
     this.$refresh = ctx.$refresh
     this.util     = ctx.$util
     this.api      = ctx.$api
@@ -220,7 +235,20 @@ class Unit {
     return this.unit.state
   }
 
-  get status() {return `<div class="fa fa-${this.icon}"></div>`}
+  status_icon(labeled) {
+    // Badge wait icons with a clock so waiting is not conveyed by color alone
+    let badge = this.state == 'WAIT' && this.icon != 'clock-o'
+    let label = this.util.escape_html(this._status_text || this.state || '')
+    let a11y = labeled ? `role="img" aria-label="${label}"` :
+      'aria-hidden="true"'
+    return `<div class="fa fa-${this.icon}${badge ? ' wait-badge' : ''}" ` +
+      `${a11y}></div>`
+  }
+
+
+  get status() {return this.status_icon(true)}
+
+
   get status_title() {return this._status_text}
 
 
@@ -232,11 +260,17 @@ class Unit {
 
 
   get status_text() {
-    return `${this.status} ${this._status_text} ${this.warnings}`
+    return `${this.status_icon(false)} ${this._status_text} ${this.warnings}`
   }
 
 
-  get icon()    {return icons[this.state] || 'times'}
+  get icon() {
+    if (this.state == 'WAIT')
+      return wait_icons[this.unit.state] || icons.WAIT
+    return icons[this.state] || 'times'
+  }
+
+
   get ppd_raw() {return this.unit.ppd || 0}
   get ppd()     {return this.ppd_raw.toLocaleString()}
 
@@ -253,22 +287,33 @@ class Unit {
   }
 
 
+  // Force updates, except on finished WUs
+  _refresh() {if (!this.unit.result) this.$refresh.value}
+
+
   get deadline() {
+    this._refresh()
     return this.util.format_timeout(this.assign.time, this.assign.deadline)
   }
 
 
   get timeout()  {
+    this._refresh()
     return this.util.format_timeout(this.assign.time, this.assign.timeout)
   }
 
 
   get assign_time() {
-    // Use $refresh to force updates
-    return this.util.since(this.assign.time, new Date, this.$refresh) + ' ago'
+    this._refresh()
+    return this.util.since(this.assign.time) + ' ago'
   }
 
   get assign_time_title() {return this.util.format_time(this.assign.time)}
+
+
+  get deadline_secs() {
+    return (to_ms(this.assign.time) - Date.now()) / 1000 + this.assign.deadline
+  }
 
 
   get deadline_time() {
@@ -303,13 +348,12 @@ class Unit {
   get eta() {
     let eta = this.eta_secs
 
-    // Use $refresh to force updates
-    if (this.waiting) return this.util.time_interval(eta, this.$refresh)
+    if (this.waiting) return this.util.time_interval(eta)
 
     let s = this.util.time_interval(eta)
 
-    if (this.deadline < eta)
-      s = `<div class="eta-warning",
+    if (this.deadline_secs < eta)
+      s = `<div class="eta-warning"
         title="WARNING: May not complete before deadline.">
         <i class="fa fa-exclamation-triangle"></i> ${s}
         <i class="fa fa-exclamation-triangle"></i></div>`
@@ -322,6 +366,7 @@ class Unit {
     let t = this.unit.run_time || 0
 
     if (this.unit.state == 'RUN' && this.unit.start_time != undefined) {
+      this.$refresh.value // Force updates while running
       let st = new Date(this.unit.start_time).getTime()
       t += (new Date().getTime() - st) / 1000
     }
@@ -330,17 +375,18 @@ class Unit {
   }
 
 
-  get run_time() {
-    // Use $refresh to force updates
-    return this.util.time_interval(this.run_time_secs, this.$refresh)
-  }
+  get run_time() {return this.util.time_interval(this.run_time_secs)}
 
 
   get cs() {return (this.wu.cs || []).join(', ')}
 
 
   get wait_until() {return new Date(this.unit.wait).getTime()}
-  get waiting() {return this.unit.wait && this.util.now < this.wait_until}
+  get waiting() {
+    // Only depend on the util.now timer while actually waiting
+    return !this.unit.result && !!this.unit.wait &&
+      Date.now() < this.wait_until && this.util.now < this.wait_until
+  }
 
 
   get wait_progress() {
@@ -353,7 +399,7 @@ class Unit {
 
   get wu_progress() {
     let p = this.unit.wu_progress
-    if (p == undefined) p = this.unit.progress
+    if (p == undefined) p = this.unit.progress || 0
     return this.util.clamp(p, 0, 1)
   }
 
